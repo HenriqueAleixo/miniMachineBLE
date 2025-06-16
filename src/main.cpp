@@ -102,6 +102,7 @@ void setup()
   pinMode(in4, OUTPUT);
   Stop();
   miniMachineBLE_begin("MiniMachine_01", handleDir);
+  
 }
 
 void loop()

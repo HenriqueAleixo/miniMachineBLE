@@ -24,6 +24,8 @@ class MyCallbacks : public NimBLECharacteristicCallbacks
     void onWrite(NimBLECharacteristic *pCharacteristic) override
     {
         std::string value = pCharacteristic->getValue();
+        Serial.print("JSON recebido: ");
+        Serial.println(value.c_str()); // <-- imprime o JSON recebido
         StaticJsonDocument<256> doc;
         if (deserializeJson(doc, value))
             return;
