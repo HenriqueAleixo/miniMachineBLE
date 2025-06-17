@@ -9,27 +9,28 @@ static DirCallback staticDirCallback;
 
 class MyServerCallbacks : public NimBLEServerCallbacks
 {
-    void onConnect(NimBLEServer *pServer) override
+    void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo)
     {
         Serial.println("🔗 BLE conectado!");
     }
-    void onDisconnect(NimBLEServer *pServer) override
+    void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason)
     {
         Serial.println("❌ BLE desconectado!");
+        NimBLEDevice::startAdvertising();
     }
 };
 
 class MyCallbacks : public NimBLECharacteristicCallbacks
 {
-    void onWrite(NimBLECharacteristic *pCharacteristic) override
+    void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo)
     {
         std::string value = pCharacteristic->getValue();
         Serial.print("JSON recebido: ");
         Serial.println(value.c_str()); // <-- imprime o JSON recebido
-        StaticJsonDocument<256> doc;
+        JsonDocument doc;
         if (deserializeJson(doc, value))
             return;
-        if (doc.containsKey("dir") && staticDirCallback)
+        if (doc["dir"] && staticDirCallback)
         {
             staticDirCallback(doc["dir"].as<String>());
         }
@@ -49,8 +50,8 @@ void miniMachineBLE_begin(const char *deviceName, DirCallback cb)
     pCharacteristic->setCallbacks(new MyCallbacks());
     pService->start();
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(SERVICE_UUID);
-    pAdvertising->setScanResponse(true);
+    pAdvertising->addServiceUUID(SERVICE_UUID); // só um UUID
+    pAdvertising->setName(deviceName);          // nome curto
     pAdvertising->start();
     Serial.println("🟢 BLE pronto e anunciando!");
 }

@@ -101,8 +101,7 @@ void setup()
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
   Stop();
-  miniMachineBLE_begin("MiniMachine_01", handleDir);
-  
+  miniMachineBLE_begin("Mini_03", handleDir);
 }
 
 void loop()
